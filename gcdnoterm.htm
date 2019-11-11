@@ -1,0 +1,299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0056)http://www.ucs.mun.ca/~smotty/gallery/DHTML/htmldiv.html -->
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Editable Character Divisions</title>
+<style type="text/css">
+.maintable
+{
+background-color:#FDFCDC;
+color:#000000;
+border:solid #c3c3c3 1px;
+margin-left:0px; 
+padding: 10px 10px 1;
+}
+div.scroll {
+  font-size:105%;
+  max-width:1600px;
+  max-height:1280px;
+  background-color:#ffffff;
+  overflow: scroll;
+}
+div[disabled="disabled"] {
+  color : #888 !important;
+}
+.bottomtext {
+  display:none ;
+  visibility: hidden;
+}
+</style>
+<script type="text/javascript">
+//<![CDATA[
+function BrowserInfo () {
+
+	var agnt 	= navigator.userAgent.toLowerCase();
+	var appVer  = navigator.appVersion.toLowerCase();
+
+	// User agent
+	this.agent = agnt;
+
+	// Browser version
+    this.major = parseInt(appVer);
+    this.minor = parseFloat(appVer);	// Major/Minor
+
+	// Browser type
+	var type = "Other";
+
+	if ((agnt.indexOf('mozilla')!=-1) && (agnt.indexOf('compatible') == -1))
+	{
+		type = "Mozilla FireFox";
+        this.major = parseInt(navigator.appVersion);
+        this.minor = parseFloat(navigator.appVersion);
+
+	}
+	if (agnt.indexOf("msie") != -1)
+	{
+		type  = "Internet Explorer";
+		// Get version again
+		var iePos  = appVer.indexOf('msie');
+		var version = appVer.substring(iePos+5,appVer.indexOf(';',iePos));
+	    this.major = parseInt(version);
+    	this.minor = parseFloat(version);
+	}
+	if (agnt.indexOf("opera") != -1)
+		type = "Opera";
+
+	this.type = type;
+
+	// Other Info
+	this.platform = navigator.platform;
+	this.isJavaEnabled = navigator.javaEnabled();
+}
+var browser = new BrowserInfo();
+var cdata = "";
+//]]>
+</script>
+<script type="text/javascript">
+//<![CDATA[
+function toDo() {
+	alert("not yet implemented");
+}
+function buttonClicked(id) {
+	if(id < -1) {
+		var el = document.getElementById('controller');
+		alert(el.innerHTML);
+	} else {
+		toDo();
+	}
+}
+function makeButton(buttonId,buttonLabel,buttonHeight,buttonSpacing) {
+        var buttonOffset=(buttonId*buttonSpacing);
+	var butHTML='<button type="button" style="vertical-align:middle;" onClick="buttonClicked(' +buttonId+');" ' + //'title="'+buttonLabel+ '" ' +
+			'>'+'<div style="'+
+				'width:'+buttonSpacing+'px;height:'+buttonHeight+'px;' +
+				'background-image:url('+'http://whizzywig.googlecode.com/files/WhizzywigToolbar.png'+');' + 
+				'background-position:-'+buttonOffset+'px 0px;'+
+				'"></div>' +
+			 '</button>';
+	return butHTML;
+}
+function makeTextButton(buttonId,buttonLabel,buttonHeight) {
+   var butHTML='<button type="button" style="vertical-align:middle;" onClick="buttonClicked('+buttonId+');" ' + 'title="'+buttonLabel+ '" '  +
+			'>'+'<div style="'+
+				'height:'+buttonHeight+'px;'+ 'padding:0 0 0 0;' +				
+				'">'+buttonLabel +'</div>' +
+			 '</button>';
+   return butHTML;
+}
+function rubberBand() { 
+	// the size of the screen can be obtained from the document.  Size the table accordingly
+	var h = self.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+	var w = self.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+	var elem = document.getElementById('rubberband');
+	if(h>600) {
+		h=600;
+	}
+	elem.width = w*.90;
+	elem.height = h*.95;
+}
+function doover() {
+	// on startup or startover, we have to initialize global variables
+	var butHTML;
+	rubberBand();
+	
+	butHTML= "";
+	butHTML += makeTextButton(-2,"Load",16);
+	butHTML += makeTextButton(-1,"Save",16);
+	for (id=0; id<13; id = id + 1) {
+		butHTML += makeButton(id,"",16,16);
+	}
+	document.getElementById('buttons').innerHTML=butHTML;
+	
+	setfocus();
+	
+	document.getElementById("idStart").value =  " ";
+	document.getElementById("offsetStart").value = " ";
+	document.getElementById("idEnd").value =  " ";
+	document.getElementById("offsetEnd").value = " ";
+}
+
+function setfocus() {
+	document.getElementById('query').focus();
+}
+
+function updatePosition() {
+//	const DOCUMENT_POSITION_DISCONNECTED = 1;
+//	const DOCUMENT_POSITION_PRECEDING = 2;
+//	const DOCUMENT_POSITION_FOLLOWING = 4;
+//	const DOCUMENT_POSITION_CONTAINS= 8;
+//	const DOCUMENT_POSITION_CONTAINED_BY = 16;
+//	const DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 32;
+	
+	setfocus();
+
+	if (document.createRange) {     // all browsers, except IE before version 9
+		var myRange = top.getSelection();
+		var dir = 0;
+		if(myRange.anchorNode.isSameNode(myRange.focusNode) ) {
+			if(myRange.anchorOffset < myRange.focusOffset) { 
+				dir = 1;
+			}
+			if(myRange.anchorOffset > myRange.focusOffset) { 
+				dir = -1;
+			}
+		} else {
+			var relation = myRange.anchorNode.compareDocumentPosition (myRange.focusNode);
+			if (relation & Node.DOCUMENT_POSITION_PRECEDING) {
+				dir = -1;
+			}
+			if (relation & Node.DOCUMENT_POSITION_FOLLOWING) {
+				dir = 1;
+			}
+			if (relation & Node.DOCUMENT_POSITION_CONTAINS) {
+				dir = 1;
+			}
+			if (relation & Node.DOCUMENT_POSITION_CONTAINED_BY) {
+				dir = -1;
+			}
+		}
+		document.getElementById("idDir").value =  dir;
+		if(dir >0) {
+			document.getElementById("idStart").value =  myRange.anchorNode.nodeName ;
+			document.getElementById("offsetStart").value = myRange.anchorOffset ;
+			document.getElementById("idEnd").value =  myRange.focusNode.nodeName ;
+			document.getElementById("offsetEnd").value = myRange.focusOffset ;
+		} else if(dir < 0) {
+			document.getElementById("idStart").value =  myRange.focusNode.nodeName ;
+			document.getElementById("offsetStart").value = myRange.focusOffset ;
+			document.getElementById("idEnd").value =  myRange.anchorNode.nodeName ;
+			document.getElementById("offsetEnd").value = myRange.anchorOffset ;
+		} else {
+			document.getElementById("idStart").value =  myRange.focusNode.nodeName ;
+			document.getElementById("offsetStart").value = myRange.focusOffset ;
+			document.getElementById("idEnd").value =  " ";
+			document.getElementById("offsetEnd").value = " ";
+		}
+	} else {  // older browsers not supported
+		document.getElementById("idStart").value =  " ";
+		document.getElementById("offsetStart").value = " ";
+		document.getElementById("idEnd").value =  " ";
+		document.getElementById("offsetEnd").value = " ";
+	}
+}
+
+function keydown(e) {
+	var asciiVal;
+	
+	asciiVal = 0;
+	if(browser.type == 'Internet Explorer') {
+		asciiVal=e.keyCode;
+	} else if(browser.type != 'Other') {
+		asciiVal=e.which;
+	} else {
+		return;
+	}
+	if( keydown.cdata == undefined ) {
+		document.getElementById('lsx1').innerHTML = "";
+		keydown.cdata = String.fromCharCode(asciiVal);
+	} 
+}
+
+function keyup(e) {
+	if( keydown.cdata) {
+		updatePosition();
+	}
+}
+
+//]]>
+</script>
+</head>
+<body onload="doover();">
+<table id="rubberband" border="0" class="maintable" cellpadding="3px" cellspacing="3px" width="915.75" height="0px" style="table-layout:fixed;" align="center">
+<tbody><tr >
+<td valign="top"  colspan="2">
+<table border="0">
+<tbody><tr><td>
+<form style="margin:0px" id="buttons"><button type="button" style="vertical-align:middle;" onclick="buttonClicked(-2);" title="Load"><div style="height:16px;padding:0 0 0 0;">Load</div></button><button type="button" style="vertical-align:middle;" onclick="buttonClicked(-1);" title="Save"><div style="height:16px;padding:0 0 0 0;">Save</div></button><button type="button" style="vertical-align:middle;" onclick="buttonClicked(0);"><div style="width:16px;height:16px;background-image:url(http://whizzywig.googlecode.com/files/WhizzywigToolbar.png);background-position:-0px 0px;"></div></button><button type="button" style="vertical-align:middle;" onclick="buttonClicked(1);"><div style="width:16px;height:16px;background-image:url(http://whizzywig.googlecode.com/files/WhizzywigToolbar.png);background-position:-16px 0px;"></div></button><button type="button" style="vertical-align:middle;" onclick="buttonClicked(2);"><div style="width:16px;height:16px;background-image:url(http://whizzywig.googlecode.com/files/WhizzywigToolbar.png);background-position:-32px 0px;"></div></button><button type="button" style="vertical-align:middle;" onclick="buttonClicked(3);"><div style="width:16px;height:16px;background-image:url(http://whizzywig.googlecode.com/files/WhizzywigToolbar.png);background-position:-48px 0px;"></div></button><button type="button" style="vertical-align:middle;" onclick="buttonClicked(4);"><div style="width:16px;height:16px;background-image:url(http://whizzywig.googlecode.com/files/WhizzywigToolbar.png);background-position:-64px 0px;"></div></button><button type="button" style="vertical-align:middle;" onclick="buttonClicked(5);"><div style="width:16px;height:16px;background-image:url(http://whizzywig.googlecode.com/files/WhizzywigToolbar.png);background-position:-80px 0px;"></div></button><button type="button" style="vertical-align:middle;" onclick="buttonClicked(6);"><div style="width:16px;height:16px;background-image:url(http://whizzywig.googlecode.com/files/WhizzywigToolbar.png);background-position:-96px 0px;"></div></button><button type="button" style="vertical-align:middle;" onclick="buttonClicked(7);"><div style="width:16px;height:16px;background-image:url(http://whizzywig.googlecode.com/files/WhizzywigToolbar.png);background-position:-112px 0px;"></div></button><button type="button" style="vertical-align:middle;" onclick="buttonClicked(8);"><div style="width:16px;height:16px;background-image:url(http://whizzywig.googlecode.com/files/WhizzywigToolbar.png);background-position:-128px 0px;"></div></button><button type="button" style="vertical-align:middle;" onclick="buttonClicked(9);"><div style="width:16px;height:16px;background-image:url(http://whizzywig.googlecode.com/files/WhizzywigToolbar.png);background-position:-144px 0px;"></div></button><button type="button" style="vertical-align:middle;" onclick="buttonClicked(10);"><div style="width:16px;height:16px;background-image:url(http://whizzywig.googlecode.com/files/WhizzywigToolbar.png);background-position:-160px 0px;"></div></button><button type="button" style="vertical-align:middle;" onclick="buttonClicked(11);"><div style="width:16px;height:16px;background-image:url(http://whizzywig.googlecode.com/files/WhizzywigToolbar.png);background-position:-176px 0px;"></div></button><button type="button" style="vertical-align:middle;" onclick="buttonClicked(12);"><div style="width:16px;height:16px;background-image:url(http://whizzywig.googlecode.com/files/WhizzywigToolbar.png);background-position:-192px 0px;"></div></button></form>
+</td><td >
+(icons compliments of <a href="http://code.google.com/p/whizzywig/">Whizzywig</a>)
+</td>
+</tr></tbody></table>
+</td></tr>
+<tr width="100%" ><td valign="top" width="50%" >Reference Specification/Implementation
+<div id="history" contenteditable="false" style="border:1px solid;height:120px;" width="100%" class="scroll"  onpaste="return false;">
+<div id="his0" contenteditable="false" >
+if  b &ne; 0 then <br />
+&nbsp;&nbsp; &nbsp; &nbsp; &#x226a; b &ne; 0 &#x226b; &rArr; &#x226a; a > 0 &rArr; a' = gcd ( a, b ) &#x226b; <br />
+else <br />
+&nbsp;&nbsp; &nbsp; &nbsp;  &#x226a; b = 0 &#x226b; &rArr; &#x226a; a > 0 &rArr; a' = gcd ( a, b ) &#x226b;
+</div><!-- This DIV is required as a workaround; it forces line-spacing of parent div to be x1 --></div></div>
+</td><td valign="top" width="50%" >Theorems
+<div id="theory" contenteditable="false" style="border:1px solid;height:120px;" width="100%" class="scroll"  onpaste="return false;">
+<div id="thy0" contenteditable="false" disabled="disabled">&forall; i &middot; i > 0 &rArr; gcd ( i, 0 ) = i </div><!-- This DIV is required as a workaround; it forces line-spacing of parent div to be x1 --></div></div>
+</td>
+<!-- tr>
+<td valign="top" width="100%">
+<table border="0" width="100%" >
+<tbody></tr></tbody></table>
+</td -->
+</tr>
+<tr>
+<td valign="top" width="100%" colspan="2">Refined  Specification/Implementation
+<div id="controller" contenteditable="false" style="border:1px solid;height:120px;" width="100%" class="scroll"  onpaste="return false;">
+<div id="lsx1" contenteditable="inherit">
+if  b &ne; 0 then <br />
+&nbsp;&nbsp; &nbsp; &nbsp; &#x226a; b &ne; 0 &#x226b; &rArr; &#x226a; a &gt; 0 &rArr; a' = gcd ( a, b ) &#x226b; <br />
+else <br />
+&nbsp;&nbsp; &nbsp; &nbsp;  &#x226a; b = 0 &#x226b; &rArr; &#x226a; a &gt; 0 &rArr; a' = a &#x226b;
+<!-- This DIV is required as a workaround; it forces line-spacing of parent div to be x1 --></div></div>
+</td>
+</tr>
+<tr>
+<td valign="top" width="100%" colspan="2">Server-side Query
+<div id="query" contenteditable="false" style="border:1px solid;height:150px;" width="100%" class="scroll"  onpaste="return false;">
+<div id="ssq0" contenteditable="false">
+\Theorem:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; forall i  ( var i > 0 => gcd ( var i, 0 ) = var i ) <br />
+\Theorem:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; if  not (svar b = 0) then ( &lt;&lt; not (svar b = 0) &gt;&gt; =&gt; &lt;&lt; svar a &gt; 0 =&gt; svar a' = gcd ( svar a, svar b ) &gt;&gt; )
+else ( &lt;&lt; svar b = 0 &gt;&gt; =&gt; &lt;&lt; svar a &gt; 0 =&gt; svar a' = gcd ( svar a, svar b ) &gt;&gt; ) <br />
+\isRefinedBy <br />
+&nbsp; &nbsp; &nbsp; &nbsp; if  not (svar b = 0) then ( &lt;&lt; not (svar b = 0) &gt;&gt;  =&gt; &lt;&lt; svar a &gt; 0 =&gt; svar a' = gcd ( svar a, svar b ) &gt;&gt;)
+else ( &lt;&lt; svar b = 0 &gt;&gt; =&gt; &lt;&lt; svar a &gt; 0 =&gt; svar a' = svar a &gt;&gt; )
+<!-- This DIV is required as a workaround; it forces line-spacing of parent div to be x1 --></div></div>
+</td>
+</tr>
+<tr>
+<td align="left" class="bottomtext"  colspan="2">
+Navigate the content above. Cursor coordinates to the right will update automatically. 
+<table align="right" border="0" width="40%">
+ <tbody><tr><td>Direction<input type="text" id="idDir" style="width: 25px" readonly=""></td>
+ <td>Start Container<input type="text" id="idStart" style="width: 50px" readonly=""></td>
+ <td>Start Offset<input type="text" id="offsetStart" style="width: 25px" readonly=""></td>
+ <td>End Container<input type="text" id="idEnd" style="width: 50px" readonly=""></td>
+ <td>End Offset<input type="text" id="offsetEnd" style="width: 25px" readonly=""></td>
+</tr></tbody></table>
+</td>
+</tr>
+</tbody></table>
+
+</body></html>
