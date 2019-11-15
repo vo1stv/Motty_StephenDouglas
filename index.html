@@ -68,6 +68,8 @@
   }
   // Asynchronous download PDF
   //
+// The workerSrc property shall be specified (esp for IE).
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/pdfjs-dist/build/pdf.worker.js';
   var loadingTask = pdfjsLib.getDocument(url);
   loadingTask.promise.then(function(pdfDoc_) {
     pdfDoc = pdfDoc_;
